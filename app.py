@@ -8,19 +8,32 @@ from functools import wraps
 from sqlalchemy import or_
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 
-# --- 1. INICIALIZAÇÃO E CONFIGURAÇÃO ---
+# --- 1. INICIALIZAÇÃO E CONFIGURAÇÃO (MÉTODO EXPLÍCITO) ---
+
+# 1. Cria as instâncias das extensões vazias primeiro
+db = SQLAlchemy()
+login_manager = LoginManager()
+socketio = SocketIO()
+
+# 2. Cria a aplicação Flask
 app = Flask(__name__)
+
+# 3. Configura a aplicação
 base_dir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(base_dir, 'capoeira_palmares.db')
 app.config['SECRET_KEY'] = 'sua-chave-secreta-incrivelmente-segura-2024'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
+# 4. Conecta as extensões à aplicação
+db.init_app(app)
+login_manager.init_app(app)
+socketio.init_app(app)
+
+# 5. Configura o LoginManager
 login_manager.login_view = 'login'
 login_manager.login_message_category = "warning"
 login_manager.login_message = "Por favor, faça login para acessar esta página."
-socketio = SocketIO(app)
+
 
 # --- 2. MODELOS DO BANCO DE DADOS ---
 class User(UserMixin, db.Model):
