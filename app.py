@@ -308,4 +308,12 @@ def init_db_command():
         print("Banco de dados inicializado.")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    # Obtém a porta do ambiente do Render, ou usa 5000 para testes locais
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Inicia o servidor Eventlet diretamente.
+    # A string vazia '' em eventlet.listen é o mesmo que '0.0.0.0'.
+    # Isso garante que ele escute em todas as interfaces de rede.
+    import eventlet
+    import eventlet.wsgi
+    eventlet.wsgi.server(eventlet.listen(('', port)), socketio)
