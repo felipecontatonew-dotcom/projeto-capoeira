@@ -45,6 +45,27 @@ def inject_unread_count():
         return dict(unread_messages=count)
     return dict(unread_messages=0)
 
+# --- ROTA DE DEBUG PARA CRIAR O BANCO DE DADOS EM PRODUÇÃO ---
+@app.route('/debug-criar-banco/secreto-9876')
+def init_db_route_debug():
+    try:
+        with app.app_context():
+            # Este comando cria as tabelas se elas não existirem. É mais seguro.
+            db.create_all()
+
+            # Verifica se o admin já existe, se não, cria ele.
+            if not User.query.filter_by(email='admin@capoeira.com').first():
+                admin = User(nome='Administrador', matricula='ADMIN001', email='admin@capoeira.com', role='admin', graduacao='Mestre')
+                admin.set_password('admin123')
+                db.session.add(admin)
+                db.session.commit()
+                return "SUCESSO: Tabelas e usuário admin foram criados!"
+            else:
+                return "AVISO: As tabelas já existiam. O usuário admin já está cadastrado."
+    except Exception as e:
+        # Retorna o erro exato para a tela do navegador para podermos ver o que aconteceu.
+        return f"ERRO AO INICIALIZAR O BANCO: {str(e)}"
+        
 # --- ROTAS DE AUTENTICAÇÃO E GERAIS ---
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -96,24 +117,6 @@ def esqueci_senha():
         flash(f'Se o e-mail "{request.form.get("email")}" estiver cadastrado, um link será enviado.', 'info')
         return redirect(url_for('login'))
     return render_template('esqueci_senha.html')
-
-# ROTA TEMPORÁRIA PARA CRIAR O BANCO DE DADOS EM PRODUÇÃO
-@app.route('/iniciar-banco-de-dados-agora/12345-abcde')
-def init_db_route():
-    try:
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
-            if not User.query.filter_by(email='admin@capoeira.com').first():
-                admin = User(nome='Administrador', matricula='ADMIN001', email='admin@capoeira.com', role='admin', graduacao='Mestre')
-                admin.set_password('admin123')
-                db.session.add(admin)
-                db.session.commit()
-        flash('Banco de dados inicializado com sucesso!', 'success')
-        return redirect(url_for('login'))
-    except Exception as e:
-        flash(f'Ocorreu um erro ao inicializar o banco: {e}', 'danger')
-        return redirect(url_for('login'))
 
 # --- ROTAS DO PAINEL DE ADMIN ---
 @app.route('/admin')
@@ -318,7 +321,6 @@ def on_connect():
 @app.cli.command("init-db")
 def init_db_command():
     with app.app_context():
-        db.drop_all()
         db.create_all()
         if not User.query.filter_by(email='admin@capoeira.com').first():
             admin = User(nome='Administrador', matricula='ADMIN001', email='admin@capoeira.com', role='admin', graduacao='Mestre')
