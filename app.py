@@ -15,10 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlit
 app.config['SECRET_KEY'] = 'sua-chave-secreta-incrivelmente-segura-2024'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Inicializa o SocketIO com o app
 socketio = SocketIO(app)
-
-# Inicializa as outras extensões com o app original do Flask
 db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -50,10 +47,7 @@ def inject_unread_count():
 def init_db_route_debug():
     try:
         with app.app_context():
-            # Este comando cria as tabelas se elas não existirem. É mais seguro.
             db.create_all()
-
-            # Verifica se o admin já existe, se não, cria ele.
             if not User.query.filter_by(email='admin@capoeira.com').first():
                 admin = User(nome='Administrador', matricula='ADMIN001', email='admin@capoeira.com', role='admin', graduacao='Mestre')
                 admin.set_password('admin123')
@@ -63,7 +57,6 @@ def init_db_route_debug():
             else:
                 return "AVISO: As tabelas já existiam. O usuário admin já está cadastrado."
     except Exception as e:
-        # Retorna o erro exato para a tela do navegador para podermos ver o que aconteceu.
         return f"ERRO AO INICIALIZAR O BANCO: {str(e)}"
         
 # --- ROTAS DE AUTENTICAÇÃO E GERAIS ---
