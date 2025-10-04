@@ -227,6 +227,39 @@ def deletar_aluno(aluno_id):
     flash(f'Aluno "{aluno.nome}" excluído com sucesso!', 'success')
     return redirect(url_for('consultar_alunos'))
 
+@app.route('/graduacao', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def graduacao():
+    if request.method == 'POST':
+        aluno = User.query.get_or_404(request.form.get('aluno_id'))
+        aluno.graduacao = request.form.get('graduacao')
+        db.session.commit()
+        flash('Graduação atualizada com sucesso!', 'success')
+        return redirect(url_for('graduacao'))
+    alunos = User.query.filter_by(role='aluno').order_by(User.nome).all()
+    return render_template('graduacao.html', alunos=alunos)
+
+@app.route('/presenca', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def presenca():
+    if request.method == 'POST':
+        nova_presenca = Presenca(
+            aluno_id=request.form['aluno_id'],
+            data_aula=datetime.strptime(request.form['data_aula'], '%Y-%m-%d').date(),
+            aula=request.form['aula'],
+            status=request.form['status']
+        )
+        db.session.add(nova_presenca)
+        db.session.commit()
+        flash('Presença registrada com sucesso!', 'success')
+        return redirect(url_for('presenca'))
+
+    alunos = User.query.filter_by(role='aluno', ativo=True).order_by(User.nome).all()
+    presencas = db.session.query(Presenca, User.nome).join(User, Presenca.aluno_id == User.id).order_by(Presenca.data_aula.desc()).limit(50).all()
+    return render_template('presenca.html', alunos=alunos, presencas=presencas, data_hoje=datetime.now().strftime('%Y-%m-%d'))
+
 @app.route('/mensagens')
 @login_required
 @admin_required
