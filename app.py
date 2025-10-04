@@ -106,21 +106,6 @@ def inject_unread_count():
     return dict(unread_messages=0)
 
 # --- 4. ROTAS E EVENTOS ---
-@app.route('/debug-criar-banco/secreto-9876')
-def init_db_route_debug():
-    try:
-        with app.app_context():
-            db.create_all()
-            if not User.query.filter_by(email='admin@capoeira.com').first():
-                admin = User(nome='Administrador', matricula='ADMIN001', email='admin@capoeira.com', role='admin', graduacao='Mestre')
-                admin.set_password('admin123')
-                db.session.add(admin)
-                db.session.commit()
-                return "SUCESSO: Tabelas e usuário admin foram criados!"
-            else:
-                return "AVISO: As tabelas já existiam. O usuário admin já está cadastrado."
-    except Exception as e:
-        return f"ERRO AO INICIALIZAR O BANCO: {str(e)}"
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
