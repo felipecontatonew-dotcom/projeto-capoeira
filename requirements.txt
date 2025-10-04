@@ -3,5 +3,5 @@ Flask-SQLAlchemy
 Flask-Login
 flask-socketio
 eventlet
-gunicorn
+Werkzeug
 psycopg2-binary
