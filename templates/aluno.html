@@ -1,0 +1,135 @@
+{% extends "aluno_layout.html" %}
+
+{% block head %}
+<style>
+    /* Estilos específicos para a grade do dashboard do aluno */
+    .grid-container { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 24px; 
+    }
+    .main-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    .main-table th, .main-table td { 
+        padding: 12px; 
+        border-bottom: 1px solid #ddd; 
+        text-align: left;
+    }
+    .main-table th { 
+        background-color: #f2f2f2; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">{{ aluno.nome[0] | upper if aluno.nome }}</div>
+    <div>
+      <h1>Bem-vindo, {{ aluno.nome }}!</h1>
+      <p>Graduação: {{ aluno.graduacao or 'Não definida' }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid-container">
+    <div>
+        <div class="form-section">
+            <h2>Próximas Aulas e Eventos</h2>
+            {% if aulas %}
+                <table class="main-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Nome</th>
+                            <th>Local</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aula in aulas %}
+                        <tr>
+                            <td>{{ aula.data_hora.strftime('%d/%m %H:%M') }}</td>
+                            <td>{{ aula.nome_aula }}</td>
+                            <td>{{ aula.local }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nenhuma aula ou evento futuro cadastrado.</p>
+            {% endif %}
+        </div>
+
+        <div class="form-section">
+            <h2>Mensagens</h2>
+            <p>Selecione um administrador para iniciar ou ver uma conversa:</p>
+            {% for admin in admins %}
+                <a href="{{ url_for('chat', destinatario_id=admin.id) }}" class="btn" style="background: #285430; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; margin-right: 10px;">
+                    Conversar com {{ admin.nome }}
+                </a>
+            {% endfor %}
+            <hr style="margin: 20px 0;">
+            <h4>Últimas do Mural (mensagens para todos)</h4>
+             {% if mensagens %}
+                <table class="main-table">
+                     <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>De</th>
+                            <th>Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in mensagens %}
+                            {% if not msg.destinatario_id %} <tr>
+                                <td>{{ msg.timestamp.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ msg.autor.nome }}</td>
+                                <td>{{ msg.conteudo }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nenhuma mensagem no mural.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="form-section">
+          <h2>Seu Histórico de Presença</h2>
+          {% if presencas %}
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Aula</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in presencas %}
+                    <tr>
+                        <td>{{ p.data_aula.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ p.aula }}</td>
+                        <td>
+                            {% if p.status == 'presente' %}
+                                <span style="color: #28a745; font-weight: bold;">Presente</span>
+                            {% else %}
+                                <span style="color: #dc3545;">Falta</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          {% else %}
+            <p>Você ainda não tem registros de presença.</p>
+          {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

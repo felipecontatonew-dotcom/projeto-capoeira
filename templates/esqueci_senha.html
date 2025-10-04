@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar Senha - Capoeira Palmares</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #285430 0%, #5a7d59 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
+        .logo { width: 80px; height: auto; margin-bottom: 20px; }
+        h2 { color: #285430; margin-bottom: 30px; font-size: 22px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: 600; text-align: left; }
+        input { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 20px;}
+        .btn-submit { width: 100%; padding: 12px; background: #285430; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='img/logo_palmares.png') }}" class="logo" alt="Logo Palmares">
+        <h2>Recuperar Senha</h2>
+        <form method="POST" action="{{ url_for('esqueci_senha') }}">
+            <label for="email">Digite seu e-mail cadastrado:</label>
+            <input type="email" name="email" required>
+            <button type="submit" class="btn-submit">Enviar</button>
+        </form>
+    </div>
+</body>
+</html>

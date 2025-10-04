@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Capoeira Angola Palmares{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="sidebar">
+    <img class="logo" src="{{ url_for('static', filename='img/logo_palmares.png') }}" alt="Logo Palmares">
+    <ul>
+      <li {% if request.path == url_for('admin_dashboard') %}class="active"{% endif %}><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li {% if request.path == url_for('gerenciar_aulas') %}class="active"{% endif %}><a href="{{ url_for('gerenciar_aulas') }}">Gerenciar Aulas</a></li>
+      <li {% if request.path == url_for('cadastro_aluno') %}class="active"{% endif %}><a href="{{ url_for('cadastro_aluno') }}">Cadastro de Alunos</a></li>
+      <li {% if request.path == url_for('consultar_alunos') %}class="active"{% endif %}><a href="{{ url_for('consultar_alunos') }}">Consultar Alunos</a></li>
+      <li {% if request.path == url_for('usuarios') %}class="active"{% endif %}><a href="{{ url_for('usuarios') }}">Usuários do Sistema</a></li>
+      <li {% if request.path == url_for('presenca') %}class="active"{% endif %}><a href="{{ url_for('presenca') }}">Controle de Presença</a></li>
+      <li {% if request.path == url_for('graduacao') %}class="active"{% endif %}><a href="{{ url_for('graduacao') }}">Graduação de Alunos</a></li>
+      <li {% if request.path == url_for('mensagens') or 'chat' in request.path %}class="active"{% endif %}>
+        <a href="{{ url_for('mensagens') }}">
+            Mensagens 
+            <span id="notification-dot" style="height: 10px; width: 10px; background-color: #ffc107; border-radius: 50%; display: {% if unread_messages > 0 %}inline-block{% else %}none{% endif %}; margin-left: 5px;"></span>
+        </a>
+      </li>
+      <li><a href="{{ url_for('logout') }}">Sair</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" style="padding: 15px; margin-bottom: 20px; border-radius: 8px; color: #fff; background-color: {% if category == 'danger' %}#dc3545{% elif category == 'success' %}#28a745{% else %}#ffc107{% endif %};">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <script>
+      const notificationSocket = io();
+      notificationSocket.on('new_message_notification', function(data) {
+          const dot = document.getElementById('notification-dot');
+          if(dot) { dot.style.display = 'inline-block'; }
+      });
+      const messagesLink = document.querySelector('a[href="/mensagens"]');
+      if (messagesLink) {
+        messagesLink.addEventListener('click', () => {
+          const dot = document.getElementById('notification-dot');
+          if(dot) { dot.style.display = 'none'; }
+        });
+      }
+  </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+/* ============================================= */
+/* ESTILOS GERAIS E BASE (PARA AMBOS OS PAINEIS) */
+/* ============================================= */
+:root {
+  --primary-color: #285430;
+  --primary-dark: #1e3e24;
+  --accent-color: #e5d9b6;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --radius: 8px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #f6f6f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ============================================= */
+/* SIDEBAR (MENU LATERAL)                        */
+/* ============================================= */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background: var(--primary-color);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+.sidebar .logo {
+  width: 90px;
+  height: auto;
+  margin: 30px 0 35px 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.sidebar li {
+  padding: 16px 32px;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 6px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.sidebar li.active, .sidebar li:hover {
+  background: var(--primary-dark);
+}
+
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================= */
+/* CONTEÚDO PRINCIPAL                            */
+/* ============================================= */
+.content {
+  flex: 1;
+  margin-left: 260px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-inner {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 3vw 3vw 3vw;
+  background: linear-gradient(120deg, #f6f6f6 80%, #e9ecf7 100%);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-bottom: 3px solid var(--accent-color);
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 32px;
+  padding: 20px 40px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+}
+
+.user-welcome {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: bold;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================= */
+/* ELEMENTOS COMUNS (BOTÕES, TABELAS, FORMULÁRIOS) */
+/* ============================================= */
+
+.btn {
+  padding: 10px 22px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+  background: var(--primary-color);
+  color: #fff;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--primary-dark);
+}
+
+.main-table {
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 36px;
+  border-collapse: collapse;
+}
+
+.main-table th {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 18px 16px;
+  font-size: 1.03em;
+  text-align: left;
+}
+
+.main-table td {
+  padding: 15px 16px;
+  font-size: 1em;
+  border-top: 1px solid #e5e5e5;
+}
+
+.form-section {
+  background: white;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.form-section h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: var(--primary-dark);
+}
+
+.form-section label {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+  display: block;
+}
+
+.form-section input, .form-section select, .form-section textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #d9d9d9;
+  border-radius: 7px;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+/* ============================================= */
+/* GRIDS (Sistema de Layout para Formulários)    */
+/* ============================================= */
+.grid {
+  display: grid;
+  gap: 20px 24px; /* Espaçamento vertical e horizontal */
+}
+
+/* Define o número de colunas */
+.grid-cols-1 { grid-template-columns: 1fr; }
+.grid-cols-2 { grid-template-columns: 1fr 1fr; }
+.grid-cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-auto { grid-template-columns: 2fr 1fr; } /* Layout específico */
+
+/* Define quantas colunas um item ocupa */
+.grid-col-span-2 { grid-column: span 2; }
+.grid-col-span-3 { grid-column: span 3; }
+.grid-col-span-4 { grid-column: span 4; }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha de Inscrição – Núcleo Tapera</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff; }
+    .logo { width: 70px; position: absolute; right: 5%; top: 10px;}
+    .ficha-container { width: 90%; max-width: 800px; margin: 30px auto; }
+    table { width: 100%; border-collapse: collapse;}
+    td, th { border: 1px solid #000; padding: 4px 8px; }
+    th { background: #efefef;}
+    .titulo { text-align:center; font-size:1.1em; font-weight: bold; margin-bottom: 6px;}
+  </style>
+</head>
+<body>
+  <div class="ficha-container">
+    <img src="{{ url_for('static', filename='img/logo_palmares.png') }}" class="logo">
+    <div class="titulo">FICHA DE INSCRIÇÃO – Núcleo Tapera</div>
+    <table>
+      <tr><th colspan="4">DADOS DO ALUNO</th></tr>
+      <tr>
+        <td>Nome</td><td colspan="3">{{ aluno.nome }}</td>
+      </tr>
+      <tr>
+        <td>Idade</td><td>{{ aluno.idade or '' }}</td>
+        <td>Data de Entrada</td><td>{{ aluno.data_entrada.strftime('%d/%m/%Y') if aluno.data_entrada else '' }}</td>
+      </tr>
+      <tr>
+        <td>Graduação</td><td>{{ aluno.graduacao or '' }}</td>
+        <td>RG</td><td>{{ aluno.rg or '' }}</td>
+      </tr>
+      <tr>
+        <td>CPF</td><td>{{ aluno.cpf or '' }}</td>
+        <td>Contato</td><td>{{ aluno.contato or '' }}</td>
+      </tr>
+      <tr>
+        <td>E-mail</td><td>{{ aluno.email }}</td>
+        <td>Senha</td><td>********</td>
+      </tr>
+      <tr>
+        <td>Etnia</td><td colspan="3">{{ aluno.etnia or '' }}</td>
+      </tr>
+      <tr><th colspan="4">DADOS DO RESPONSÁVEL 1</th></tr>
+      <tr>
+        <td>Nome</td><td>{{ resp1.nome if resp1 else '' }}</td>
+        <td>CPF</td><td>{{ resp1.cpf if resp1 else '' }}</td>
+      </tr>
+      <tr>
+        <td>Parentesco</td><td colspan="3">{{ resp1.parentesco if resp1 else '' }}</td>
+      </tr>
+      <tr><th colspan="4">DADOS DO RESPONSÁVEL 2</th></tr>
+      <tr>
+        <td>Nome</td><td>{{ resp2.nome if resp2 else '' }}</td>
+        <td>CPF</td><td>{{ resp2.cpf if resp2 else '' }}</td>
+      </tr>
+      <tr>
+        <td>Parentesco</td><td colspan="3">{{ resp2.parentesco if resp2 else '' }}</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

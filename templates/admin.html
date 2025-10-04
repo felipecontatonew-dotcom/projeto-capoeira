@@ -1,0 +1,89 @@
+{% extends "layout_admin_base.html" %}
+
+{% block title %}Painel Administrativo – Capoeira Angola Palmares{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Bem Vindo!</h1>
+      <p style="color:#666;">Administrador • Capoeira Angola Palmares</p>
+    </div>
+  </div>
+  <div>
+    <a class="btn" href="{{ url_for('trocar_senha') }}">
+      <svg width="18" height="18" style="vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+      Trocar Senha
+    </a>
+  </div>
+</div>
+<h2 style="color:#285430;margin-bottom:20px;margin-top:0;">Visão Geral</h2>
+
+<div class="grid grid-cols-3">
+  <div class="form-section">
+    <h3 style="margin-top:0;">Total de Alunos</h3>
+    <div class="value" style="font-size: 2.3em; color: #285430; font-weight: bold;">{{ total_alunos }}</div>
+    <div class="note" style="color: #388e3c; font-size: 15px;">Ativos no sistema</div>
+  </div>
+  <div class="form-section">
+    <h3 style="margin-top:0;">Alunos Inativos</h3>
+    <div class="value" style="font-size: 2.3em; color: #285430; font-weight: bold;">{{ alunos_inativos }}</div>
+    <div class="note" style="color: #888; font-size: 15px;">Contas desativadas</div>
+  </div>
+  <div class="form-section">
+    <h3 style="margin-top:0;">Mensagens</h3>
+    <div class="value" style="font-size: 2.3em; color: #285430; font-weight: bold;">{{ mensagens|length }}</div>
+    <div class="note" style="color: #888; font-size: 15px;">No sistema</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="form-section">
+    <h3>Alunos Recentes</h3>
+    <table class="main-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Matrícula</th>
+          <th>Graduação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for aluno in alunos_recentes %}
+        <tr>
+          <td>{{ aluno.nome }}</td>
+          <td>{{ aluno.matricula }}</td>
+          <td>{{ aluno.graduacao }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" style="text-align:center;">Nenhum aluno recente.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="form-section">
+    <h3>Últimas Mensagens</h3>
+    <table class="main-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Destinatário</th>
+          <th>Mensagem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for msg in mensagens %}
+        <tr>
+          <td>{{ msg.timestamp.strftime('%d/%m/%Y') }}</td>
+          <td>{{ "Mural" if not msg.destinatario_id else msg.destinatario.nome }}</td>
+          <td>{{ msg.conteudo[:50] }}...</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" style="text-align:center;">Nenhuma mensagem.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

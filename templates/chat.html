@@ -1,0 +1,103 @@
+{% extends ( "layout_admin_base.html" if current_user.role == 'admin' else "aluno_layout.html" ) %}
+{% block title %}Chat com {{ destinatario.nome }}{% endblock %}
+
+{% block head %}
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<style>
+    .chat-container { max-width: 800px; margin: auto; border: 1px solid #ddd; border-radius: 8px; display: flex; flex-direction: column; height: 70vh; background: #fff; }
+    .chat-header { padding: 15px; background: #285430; color: white; font-weight: bold; border-radius: 8px 8px 0 0; }
+    .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
+    .message { max-width: 70%; padding: 10px 15px; margin-bottom: 10px; border-radius: 18px; line-height: 1.4; position: relative; }
+    .message.sent { background-color: #dcf8c6; align-self: flex-end; }
+    .message.received { background-color: #f1f0f0; align-self: flex-start; }
+    .message .timestamp { font-size: 0.75em; text-align: right; margin-top: 5px; color: #888; }
+    .message .delete-btn { position: absolute; top: 2px; right: 10px; font-size: 1.2em; cursor: pointer; color: #aaa; display: none; }
+    .message:hover .delete-btn { display: inline; }
+    .chat-form { display: flex; padding: 15px; border-top: 1px solid #ddd; }
+    .chat-form input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 10px 15px; margin-right: 10px; }
+    .chat-form button { border-radius: 50%; width: 45px; height: 45px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">Conversa com {{ destinatario.nome }}</div>
+    <div class="chat-messages" id="chat-messages">
+        {% for msg in mensagens %}
+            <div class="message {% if msg.remetente_id == current_user.id %}sent{% else %}received{% endif %}" id="message-{{ msg.id }}">
+                {{ msg.conteudo }}
+                <div class="timestamp">{{ msg.timestamp.strftime('%H:%M') }}</div>
+                {% if current_user.role == 'admin' or msg.remetente_id == current_user.id %}
+                    <span class="delete-btn" onclick="deleteMessage({{ msg.id }})">&times;</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <form class="chat-form" id="message-form">
+        <input type="text" id="message-input" placeholder="Digite sua mensagem..." autocomplete="off" required>
+        <button type="submit" class="btn">→</button>
+    </form>
+</div>
+
+<script>
+    const socket = io();
+    const room = "{{ room }}";
+    const destinatarioId = {{ destinatario.id }};
+    const currentUserId = {{ current_user.id }};
+
+    socket.on('connect', function() {
+        socket.emit('join', { room: room });
+    });
+
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = document.getElementById('message-input');
+        const conteudo = input.value;
+        if (conteudo.trim() !== '') {
+            socket.emit('send_message', {
+                'conteudo': conteudo,
+                'destinatario_id': destinatarioId,
+                'room': room
+            });
+            input.value = '';
+        }
+    });
+
+    socket.on('receive_message', function(data) {
+        const chatBox = document.getElementById('chat-messages');
+        const isSent = data.remetente_id === currentUserId;
+        const messageClass = isSent ? 'sent' : 'received';
+        
+        let deleteButton = '';
+        if (isSent || "{{ current_user.role }}" === "admin") {
+            deleteButton = `<span class="delete-btn" onclick="deleteMessage(${data.id})">&times;</span>`;
+        }
+        
+        const newMessageHTML = `
+            <div class="message ${messageClass}" id="message-${data.id}">
+                ${data.conteudo}
+                <div class="timestamp">${data.timestamp}</div>
+                ${deleteButton}
+            </div>
+        `;
+        chatBox.innerHTML += newMessageHTML;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    function deleteMessage(messageId) {
+        if (confirm('Deseja apagar esta mensagem?')) {
+            socket.emit('delete_message', { 'message_id': messageId, 'room': room });
+        }
+    }
+    
+    socket.on('message_deleted', function(data) {
+        const messageElement = document.getElementById(`message-${data.message_id}`);
+        if (messageElement) { messageElement.remove(); }
+    });
+
+    window.onload = function() {
+        const chatBox = document.getElementById('chat-messages');
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
+</script>
+{% endblock %}

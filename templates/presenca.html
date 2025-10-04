@@ -1,0 +1,89 @@
+{% extends "layout_admin_base.html" %}
+
+{% block title %}Controle de Presença – Capoeira Angola Palmares{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Controle de Presença</h1>
+      <div style="color:#666;">Administrador • Capoeira Angola Palmares</div>
+    </div>
+  </div>
+</div>
+
+<div class="form-section">
+  <h2>Registrar Presença</h2>
+  <form method="POST" action="{{ url_for('presenca') }}">
+    <div class="grid grid-cols-2">
+      <div class="form-group grid-col-span-2">
+        <label for="aluno_id">Aluno:</label>
+        <select id="aluno_id" name="aluno_id" required>
+          <option value="">Selecione um aluno</option>
+          {% for aluno in alunos %}
+          <option value="{{ aluno.id }}">{{ aluno.nome }} - {{ aluno.matricula }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="data_aula">Data da Aula:</label>
+        <input type="date" id="data_aula" name="data_aula" value="{{ data_hoje }}" required>
+      </div>
+      <div class="form-group">
+        <label for="aula">Tipo de Aula:</label>
+        <select id="aula" name="aula" required>
+          <option value="Capoeira Angola">Capoeira Angola</option>
+          <option value="Musicalidade">Musicalidade</option>
+          <option value="Aula Especial">Aula Especial</option>
+        </select>
+      </div>
+      <div class="form-group grid-col-span-2">
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+          <option value="presente">Presente</option>
+          <option value="falta">Falta</option>
+          <option value="justificada">Falta Justificada</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="btn" style="margin-top: 20px;">Registrar Presença</button>
+  </form>
+</div>
+
+<div class="form-section">
+  <h2>Histórico de Presenças Recentes</h2>
+  <table class="main-table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Aluno</th>
+        <th>Aula</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for presenca, aluno_nome in presencas %}
+      <tr>
+        <td>{{ presenca.data_aula.strftime('%d/%m/%Y') }}</td>
+        <td>{{ aluno_nome }}</td>
+        <td>{{ presenca.aula }}</td>
+        <td>
+          {% if presenca.status == 'presente' %}
+            <span style="color: #28a745; font-weight: bold;">Presente</span>
+          {% elif presenca.status == 'falta' %}
+            <span style="color: #dc3545; font-weight: bold;">Falta</span>
+          {% else %}
+            <span style="color: #ffa726; font-weight: bold;">Justificada</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4" style="text-align:center;color:#999;">Nenhuma presença registrada.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

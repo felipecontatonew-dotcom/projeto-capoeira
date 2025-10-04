@@ -1,0 +1,135 @@
+{% extends "layout_admin_base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Cadastro de Aluno</h1>
+      <div style="color:#666;">Administrador • Capoeira Angola Palmares</div>
+    </div>
+  </div>
+</div>
+<form action="{{ url_for('cadastro_aluno') }}" method="POST" id="formCadastro" class="form-section">
+  
+  <h2>Dados do Aluno</h2>
+  <div class="grid grid-cols-4">
+    <div class="form-group grid-col-span-2">
+      <label for="nomeAluno">Nome:</label>
+      <input type="text" id="nomeAluno" name="nomeAluno" required>
+    </div>
+    <div class="form-group grid-col-span-2">
+      <label for="idadeAluno">Idade:</label>
+      <input type="number" id="idadeAluno" name="idadeAluno" min="0" required>
+    </div>
+    <div class="form-group">
+      <label for="etnia">Etnia:</label>
+      <select id="etnia" name="etnia" required>
+        <option value="">Selecione</option>
+        <option value="Branco">Branco</option>
+        <option value="Pardo">Pardo</option>
+        <option value="Preto">Preto</option>
+        <option value="Indigena">Indígena</option>
+        <option value="Amarelo">Amarelo</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="cpfAluno">CPF:</label>
+      <input type="text" id="cpfAluno" name="cpfAluno" required>
+    </div>
+    <div class="form-group">
+      <label for="rgAluno">RG:</label>
+      <input type="text" id="rgAluno" name="rgAluno">
+    </div>
+    <div class="form-group">
+      <label for="contatoAluno">Contato:</label>
+      <input type="text" id="contatoAluno" name="contatoAluno">
+    </div>
+    <div class="form-group grid-col-span-2">
+      <label for="emailAluno">E-mail:</label>
+      <input type="email" id="emailAluno" name="emailAluno" required>
+    </div>
+    <div class="form-group">
+      <label for="senhaAluno">Senha:</label>
+      <input type="password" id="senhaAluno" name="senhaAluno" required>
+    </div>
+    <div class="form-group">
+      <label for="graduacaoAluno">Graduação:</label>
+      <select id="graduacaoAluno" name="graduacaoAluno" required>
+        <option value="">Selecione</option>
+        <option value="Mestre">Mestre</option>
+        <option value="Contra Mestre">Contra Mestre</option>
+        <option value="Professor">Professor</option>
+        <option value="Graduado">Graduado</option>
+        <option value="Iniciante">Iniciante</option>
+      </select>
+    </div>
+     <div class="form-group grid-col-span-4">
+      <label for="dataEntrada">Data de Entrada:</label>
+      <input type="date" id="dataEntrada" name="dataEntrada" required readonly value="{{ data_atual }}">
+    </div>
+  </div>
+
+  <div id="responsaveis-section" style="margin-top:24px; display:none;">
+    <hr style="margin: 30px 0;">
+    <h2>Dados do Responsável</h2>
+    <div class="grid grid-cols-4">
+      <div class="form-group grid-col-span-2">
+        <label for="nomeResp1">Nome (Responsável 1):</label>
+        <input type="text" id="nomeResp1" name="nomeResp1">
+      </div>
+      <div class="form-group">
+        <label for="cpfResp1">CPF:</label>
+        <input type="text" id="cpfResp1" name="cpfResp1">
+      </div>
+      <div class="form-group">
+        <label for="parentescoResp1">Parentesco:</label>
+        <input type="text" id="parentescoResp1" name="parentescoResp1">
+      </div>
+
+       <div class="form-group grid-col-span-2">
+        <label for="nomeResp2">Nome (Responsável 2):</label>
+        <input type="text" id="nomeResp2" name="nomeResp2">
+      </div>
+      <div class="form-group">
+        <label for="cpfResp2">CPF:</label>
+        <input type="text" id="cpfResp2" name="cpfResp2">
+      </div>
+      <div class="form-group">
+        <label for="parentescoResp2">Parentesco:</label>
+        <input type="text" id="parentescoResp2" name="parentescoResp2">
+      </div>
+    </div>
+  </div>
+
+  <hr style="margin: 30px 0;">
+  <h2>Tipo de Usuário</h2>
+  <div style="margin-bottom:20px;">
+    <label style="display: inline-block; margin-right: 20px;">
+      <input type="radio" name="tipo_usuario" value="aluno" checked> Aluno
+    </label>
+    <label style="display: inline-block;">
+      <input type="radio" name="tipo_usuario" value="adm"> Usuário ADM
+    </label>
+  </div>
+  <button type="submit" class="btn">Salvar</button>
+</form>
+
+<script>
+// Esconde/exibe a seção de responsáveis conforme a idade
+document.getElementById('idadeAluno').addEventListener('input', function() {
+  let idade = parseInt(this.value);
+  let respSec = document.getElementById('responsaveis-section');
+  if (idade && idade < 18) {
+    respSec.style.display = 'block';
+    // Torna os campos do primeiro responsável obrigatórios
+    document.getElementById('nomeResp1').required = true;
+    document.getElementById('cpfResp1').required = true;
+  } else {
+    respSec.style.display = 'none';
+    document.getElementById('nomeResp1').required = false;
+    document.getElementById('cpfResp1').required = false;
+  }
+});
+</script>
+{% endblock %}

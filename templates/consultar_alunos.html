@@ -1,0 +1,67 @@
+{% extends "layout_admin_base.html" %}
+
+{% block title %}Consultar Alunos – Capoeira Angola Palmares{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Consultar Alunos</h1>
+      <div style="color:#666;">Busque, visualize e gerencie o status dos alunos.</div>
+    </div>
+  </div>
+</div>
+
+<div class="form-section" style="background: #fff; padding: 20px; border-radius: 14px; box-shadow: 0 2px 14px rgba(40,84,48,0.09);">
+  <form method="GET" action="{{ url_for('consultar_alunos') }}" style="display:flex; gap:15px;">
+    <input type="text" name="busca" placeholder="Buscar por nome, matrícula ou e-mail..." style="width:340px; margin-bottom: 0;" value="{{ request.args.get('busca', '') }}">
+    <button type="submit" class="btn">Buscar</button>
+  </form>
+</div>
+
+<div class="form-section" style="padding:0;">
+    <table class="main-table">
+      <thead>
+        <tr>
+          <th>Matrícula</th>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Graduação</th>
+          <th style="text-align: center;">Status</th>
+          <th style="text-align: center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for aluno in alunos %}
+        <tr>
+          <td>{{ aluno.matricula }}</td>
+          <td><a href="{{ url_for('ficha_aluno', aluno_id=aluno.id) }}" title="Ver ficha completa">{{ aluno.nome }}</a></td>
+          <td>{{ aluno.email }}</td>
+          <td>{{ aluno.graduacao }}</td>
+          <td style="text-align: center;">
+            <form method="POST" action="{{ url_for('atualizar_status_aluno') }}" style="display:inline-flex; gap:8px;">
+              <input type="hidden" name="aluno_id" value="{{ aluno.id }}">
+              <label style="font-weight:400; cursor: pointer;">
+                <input type="radio" name="status" value="ativo" {% if aluno.ativo %}checked{% endif %} onchange="this.form.submit()"> Ativo
+              </label>
+              <label style="font-weight:400; cursor: pointer;">
+                <input type="radio" name="status" value="inativo" {% if not aluno.ativo %}checked{% endif %} onchange="this.form.submit()"> Inativo
+              </label>
+            </form>
+          </td>
+          <td style="text-align: center;">
+              <form action="{{ url_for('deletar_aluno', aluno_id=aluno.id) }}" method="POST" onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja excluir este aluno? Esta ação não pode ser desfeita.');">
+                  <button type="submit" class="btn" style="background-color: #dc3545; padding: 8px 15px;">Excluir</button>
+              </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align:center;color:#999;">Nenhum aluno encontrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "layout_admin_base.html" %}
+
+{% block title %}Mensagens{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Mural e Conversas</h1>
+      <p style="color:#666;">Envie mensagens para todos ou inicie uma conversa individual.</p>
+    </div>
+  </div>
+</div>
+
+<div class="form-section">
+    <h2>Iniciar Conversa com Aluno</h2>
+    <p>Selecione um aluno da lista abaixo para ver o histórico e enviar uma mensagem direta.</p>
+    <table class="main-table">
+        <thead>
+            <tr>
+                <th>Nome do Aluno</th>
+                <th>Matrícula</th>
+                <th style="text-align: center;">Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aluno in alunos %}
+            <tr>
+                <td>{{ aluno.nome }}</td>
+                <td>{{ aluno.matricula }}</td>
+                <td style="text-align: center;">
+                    <a href="{{ url_for('chat', destinatario_id=aluno.id) }}" class="btn">Conversar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" style="text-align: center;">Nenhum aluno cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="form-section">
+  <h2>Enviar Mensagem para o Mural (Todos os Alunos)</h2>
+  <form method="POST" action="{{ url_for('mensagens') }}">
+    <div class="form-group">
+      <label for="conteudo">Mensagem:</label>
+      <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn" style="margin-top:10px;">Enviar para Todos</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layout_admin_base.html" %}
+{% block title %}Usuários do Sistema – Capoeira Angola Palmares{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Usuários do Sistema</h1>
+      <div style="color:#666;">Gerencie todos os usuários, incluindo alunos e administradores.</div>
+    </div>
+  </div>
+</div>
+<div class="form-section">
+  <table class="main-table">
+    <thead>
+      <tr>
+        <th>Matrícula</th>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>Tipo</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in usuarios %}
+      <tr>
+        <td>{{ user.matricula }}</td>
+        <td>{{ user.nome }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          {% if user.role == 'admin' %}
+            <span style="font-weight: bold; color: #285430;">Admin</span>
+          {% else %}
+            <span>Aluno</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if user.ativo %}
+            <span style="color: #388e3c;">Ativo</span>
+          {% else %}
+            <span style="color: #b71c1c;">Inativo</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="{{ url_for('resetar_senha') }}" onsubmit="return confirm('Tem certeza que deseja resetar a senha deste usuário?');" style="display:inline;">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="btn">Resetar Senha</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

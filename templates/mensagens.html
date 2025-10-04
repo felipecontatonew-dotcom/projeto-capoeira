@@ -1,0 +1,51 @@
+{% extends "layout_admin_base.html" %}
+{% block title %}Mensagens – Capoeira Angola Palmares{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Mensagens</h1>
+      <div style="color:#666;">Administrador • Capoeira Angola Palmares</div>
+    </div>
+  </div>
+</div>
+<div class="form-section">
+  <form method="POST" action="{{ url_for('mensagens') }}">
+    <label for="destinatario">Destinatário:</label>
+    <select id="destinatario" name="destinatario">
+      <option value="Todos">Todos os Alunos</option>
+    </select>
+    <label for="mensagem">Mensagem:</label>
+    <textarea id="mensagem" name="mensagem" rows="3" required></textarea>
+    <button type="submit" class="btn" style="margin-top:10px;">Enviar</button>
+  </form>
+</div>
+<div class="form-section">
+  <h2>Histórico de Mensagens</h2>
+  <table class="main-table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Remetente</th>
+        <th>Destinatário</th>
+        <th>Mensagem</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in mensagens %}
+      <tr>
+        <td>{{ m.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ m.remetente_nome }}</td>
+        <td>{{ m.destinatario }}</td>
+        <td>{{ m.conteudo }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4" style="text-align:center;color:#999;">Nenhuma mensagem encontrada.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

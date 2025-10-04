@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Trocar Senha – Capoeira Angola Palmares</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: linear-gradient(135deg, #285430 0%, #5a7d59 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
+    .logo { width: 80px; height: auto; margin-bottom: 20px; }
+    h1 { color: #285430; margin-bottom: 30px; font-size: 24px; }
+    .form-group { margin-bottom: 20px; text-align: left; }
+    label { display: block; margin-bottom: 5px; color: #333; font-weight: 600; }
+    input { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+    .btn-submit { width: 100%; padding: 12px; background: #285430; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .alert-danger { padding: 10px; background: #f8d7da; color: #dc3545; border-radius: 5px; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="{{ url_for('static', filename='img/logo_palmares.png') }}" class="logo" alt="Logo Palmares">
+    <h1>Trocar Senha</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          {% if category == 'danger' %}
+            <div class="alert-danger">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <form method="POST" action="{{ url_for('trocar_senha') }}">
+      <div class="form-group">
+        <label for="nova_senha">Nova Senha (mínimo 5 caracteres):</label>
+        <input type="password" id="nova_senha" name="nova_senha" required minlength="5">
+      </div>
+      <button type="submit" class="btn-submit">Salvar Nova Senha</button>
+    </form>
+  </div>
+</body>
+</html>

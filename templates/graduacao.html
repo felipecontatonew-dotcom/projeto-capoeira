@@ -1,0 +1,53 @@
+{% extends "layout_admin_base.html" %}
+{% block title %}Graduação de Alunos – Capoeira Angola Palmares{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="user-welcome">
+    <div class="user-avatar">★</div>
+    <div>
+      <h1>Graduação de Alunos</h1>
+      <p style="color:#666;">Altere a graduação de cada aluno individualmente.</p>
+    </div>
+  </div>
+</div>
+
+<div class="form-section">
+  <table class="main-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Matrícula</th>
+        <th>Graduação Atual</th>
+        <th style="width: 250px;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for aluno in alunos %}
+      <tr>
+        <td>{{ aluno.nome }}</td>
+        <td>{{ aluno.matricula }}</td>
+        <td>{{ aluno.graduacao }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('graduacao') }}" style="display:flex; gap:8px; align-items: center;">
+            <input type="hidden" name="aluno_id" value="{{ aluno.id }}">
+            <select name="graduacao" class="form-control" style="margin-bottom: 0;">
+              <option value="Mestre" {% if aluno.graduacao == "Mestre" %}selected{% endif %}>Mestre</option>
+              <option value="Contra Mestre" {% if aluno.graduacao == "Contra Mestre" %}selected{% endif %}>Contra Mestre</option>
+              <option value="Professor" {% if aluno.graduacao == "Professor" %}selected{% endif %}>Professor</option>
+              <option value="Graduado" {% if aluno.graduacao == "Graduado" %}selected{% endif %}>Graduado</option>
+              <option value="Iniciante" {% if aluno.graduacao == "Iniciante" %}selected{% endif %}>Iniciante</option>
+            </select>
+            <button type="submit" class="btn">Salvar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not alunos %}
+      <tr>
+        <td colspan="4" style="text-align:center;color:#999;">Nenhum aluno encontrado.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
