@@ -11,15 +11,14 @@ from flask_socketio import SocketIO, join_room, leave_room, send, emit
 # --- CONFIGURAÇÃO DA APLICAÇÃO ---
 app = Flask(__name__)
 base_dir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_dir, 'capoeira_palmares.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(base_dir, 'capoeira_palmares.db')
 app.config['SECRET_KEY'] = 'sua-chave-secreta-incrivelmente-segura-2024'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# ✅ CORREÇÃO APLICADA AQUI
-# 1. O SocketIO é inicializado com o 'app', mas em uma variável separada.
+# Inicializa o SocketIO com o app
 socketio = SocketIO(app)
 
-# 2. As outras extensões usam o 'app' original do Flask.
+# Inicializa as outras extensões com o app original do Flask
 db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -97,7 +96,25 @@ def esqueci_senha():
         flash(f'Se o e-mail "{request.form.get("email")}" estiver cadastrado, um link será enviado.', 'info')
         return redirect(url_for('login'))
     return render_template('esqueci_senha.html')
-    
+
+# ROTA TEMPORÁRIA PARA CRIAR O BANCO DE DADOS EM PRODUÇÃO
+@app.route('/iniciar-banco-de-dados-agora/12345-abcde')
+def init_db_route():
+    try:
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            if not User.query.filter_by(email='admin@capoeira.com').first():
+                admin = User(nome='Administrador', matricula='ADMIN001', email='admin@capoeira.com', role='admin', graduacao='Mestre')
+                admin.set_password('admin123')
+                db.session.add(admin)
+                db.session.commit()
+        flash('Banco de dados inicializado com sucesso!', 'success')
+        return redirect(url_for('login'))
+    except Exception as e:
+        flash(f'Ocorreu um erro ao inicializar o banco: {e}', 'danger')
+        return redirect(url_for('login'))
+
 # --- ROTAS DO PAINEL DE ADMIN ---
 @app.route('/admin')
 @login_required
