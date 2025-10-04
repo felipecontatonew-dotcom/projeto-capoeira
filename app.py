@@ -8,7 +8,7 @@ from functools import wraps
 from sqlalchemy import or_
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 
-# --- INICIALIZAÇÃO E CONFIGURAÇÃO ---
+# --- 1. INICIALIZAÇÃO E CONFIGURAÇÃO ---
 app = Flask(__name__)
 base_dir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(base_dir, 'capoeira_palmares.db')
@@ -18,10 +18,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+login_manager.login_message_category = "warning"
 login_manager.login_message = "Por favor, faça login para acessar esta página."
 socketio = SocketIO(app)
 
-# --- MODELOS DO BANCO DE DADOS ---
+# --- 2. MODELOS DO BANCO DE DADOS ---
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,7 +44,6 @@ class User(UserMixin, db.Model):
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
-
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -76,7 +76,7 @@ class Aula(db.Model):
     local = db.Column(db.String(200), nullable=False)
     tipo = db.Column(db.String(50), default='Aula')
 
-# --- FUNÇÕES AUXILIARES ---
+# --- 3. FUNÇÕES AUXILIARES ---
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -100,8 +100,7 @@ def inject_unread_count():
             return dict(unread_messages=0)
     return dict(unread_messages=0)
 
-# --- ROTAS E EVENTOS ---
-
+# --- 4. ROTAS E EVENTOS ---
 @app.route('/debug-criar-banco/secreto-9876')
 def init_db_route_debug():
     try:
@@ -294,7 +293,7 @@ def on_connect():
     if current_user.is_authenticated:
         join_room(f"user_{current_user.id}")
 
-# --- COMANDO E EXECUÇÃO ---
+# --- 5. COMANDO CLI E EXECUÇÃO LOCAL ---
 @app.cli.command("init-db")
 def init_db_command():
     with app.app_context():
@@ -307,13 +306,7 @@ def init_db_command():
             print('Admin criado com sucesso!')
         print("Banco de dados inicializado.")
 
+# Bloco para rodar localmente (python app.py)
+# O servidor do Render IGNORA esta parte
 if __name__ == '__main__':
-    # Obtém a porta do ambiente do Render, ou usa 5000 para testes locais
-    port = int(os.environ.get('PORT', 5000))
-    
-    # Inicia o servidor Eventlet diretamente.
-    # A string vazia '' em eventlet.listen é o mesmo que '0.0.0.0'.
-    # Isso garante que ele escute em todas as interfaces de rede.
-    import eventlet
-    import eventlet.wsgi
-    eventlet.wsgi.server(eventlet.listen(('', port)), socketio)
+    socketio.run(app, debug=True)
