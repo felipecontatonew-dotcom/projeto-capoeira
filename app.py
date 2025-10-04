@@ -249,6 +249,41 @@ def mensagens():
     alunos = User.query.filter_by(role='aluno').order_by(User.nome).all()
     return render_template('mensagens_admin.html', alunos=alunos)
 
+@app.route('/usuarios')
+@login_required
+@admin_required
+def usuarios():
+    users = User.query.order_by(User.nome).all()
+    return render_template('usuarios.html', usuarios=users)
+
+@app.route('/resetar_senha', methods=['POST'])
+@login_required
+@admin_required
+def resetar_senha():
+    user = User.query.get_or_404(request.form.get('user_id'))
+    user.set_password("capoeira123")
+    db.session.commit()
+    flash(f'Senha de {user.nome} resetada para "capoeira123".', 'success')
+    return redirect(url_for('usuarios'))
+
+@app.route('/ficha_aluno/<int:aluno_id>')
+@login_required
+@admin_required
+def ficha_aluno(aluno_id):
+    aluno = User.query.get_or_404(aluno_id)
+    resp1 = Responsavel.query.filter_by(aluno_id=aluno.id).first()
+    return render_template('ficha_aluno.html', aluno=aluno, resp1=resp1)
+
+@app.route('/atualizar_status_aluno', methods=['POST'])
+@login_required
+@admin_required
+def atualizar_status_aluno():
+    aluno = User.query.get_or_404(request.form.get('aluno_id'))
+    aluno.ativo = (request.form.get('status') == 'ativo')
+    db.session.commit()
+    flash('Status do aluno atualizado.', 'success')
+    return redirect(url_for('consultar_alunos'))
+
 @app.route('/chat/<int:destinatario_id>')
 @login_required
 def chat(destinatario_id):
